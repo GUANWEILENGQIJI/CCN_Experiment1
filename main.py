@@ -2,6 +2,7 @@ import Framing_Function
 import Unpacking_Function
 
 ReceiveFile_path = ""
+state = ""
 
 #发送功能
 def send_Data(control,Data,destinationaddress,sourceaddress,times):
@@ -41,6 +42,10 @@ def receive_Data(File):
                     return False
                 if bytes_rec_data[-1:] == b'\x7e' and bytes_rec_data[-2:-1] != b'\x7d':#转义字符
                     return bytes_rec_data
+        if i >= 100 :
+            return "noData"
+
+
 #将接收到的数据包解包
 def UnpackingRecData(File):
     if receive_Data(File) != False:
@@ -56,16 +61,43 @@ def UnpackingRecData(File):
     else :
         return False
 
+#定义状态机
+def StateMachine():
+    while state != "end" :
+        if state == "leisure":
+            if receive_Data(ReceiveFile_path) == "noData":
+                state = "leisure"
+            if receive_Data(ReceiveFile_path) != "noData":
+                state = "receive"
+        if state == "send":
+            #发送数据
+            print('发送')
+
+        if state == "receive":
+            #接收数据
+            print('接收')
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Data = input("请输入数据: ")
 Data = "w操你妈了个逼d你妈了个逼d你妈了个逼d你妈了个逼d你妈了个逼d"
 bytes_Data = Data.encode('gbk')
 DataLength = len(bytes_Data)
 #print("数据长度:",DataLength)
-
 i = 0
 K = 0
-
 while True:
+    #发送逻辑
     if bytes_Data[i] == None:
         break
     K += 1
