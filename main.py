@@ -45,6 +45,20 @@ def receive_Data(File):
         if i >= 100 :
             return "noData"
 
+#从键盘输入接受数据包
+def receive_Data_keyboard():
+    while True:
+        bytes_rec_data = input("请输入数据: ")
+        if Unpacking_Function.Unpacking_Function1(bytes_rec_data) != False:
+            (Data,K) = Unpacking_Function.Unpacking_Function1(bytes_rec_data)
+            if Data == 0x20:
+                return 0x20 , K+1
+            elif Data == 0x30:
+                return 0x30 , K
+            else:
+                return Data , K
+        else :
+            return False
 
 #将接收到的数据包解包
 def UnpackingRecData(File):
