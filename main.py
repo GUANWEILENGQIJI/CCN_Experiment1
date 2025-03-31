@@ -94,7 +94,7 @@ def StateMachine():
             print('接收')
 
 #Data = input("请输入数据: ")
-Data = "你真是个大帅哥"
+Data = input("请输入数据: ")
 bytes_Data = Data.encode('gbk')
 DataLength = len(bytes_Data)
 print("数据长度:",DataLength)
