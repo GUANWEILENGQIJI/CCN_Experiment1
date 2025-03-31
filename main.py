@@ -9,7 +9,7 @@ def send_Data(control,Data,destinationaddress,sourceaddress,times):
     match control:
         case '\x10':
             #发送数据
-            print("发送:", Framing_Function.Framing_Function1(Data,destinationaddress,sourceaddress,times))
+            print("发送:", {bin(int.from_bytes(Framing_Function.Framing_Function1(Data,destinationaddress,sourceaddress,times),byteorder='big'))})
         case '\x20':
             #发送应答
             print("发送:", Framing_Function.ACK_send(destinationaddress,sourceaddress,times))
@@ -91,43 +91,28 @@ def StateMachine():
             #接收数据
             print('接收')
 
-
-
-
-
-
-
-
-
-
-
-
-
 #Data = input("请输入数据: ")
-Data = "w操你妈了个逼d你妈了个逼d你妈了个逼d你妈了个逼d你妈了个逼d"
+Data = "傻逼"
 bytes_Data = Data.encode('gbk')
 DataLength = len(bytes_Data)
-#print("数据长度:",DataLength)
+print("数据长度:",DataLength)
 i = 0
 K = 0
+data_tosend = "".encode('gbk')
 while True:
     #发送逻辑
-    if bytes_Data[i] == None:
-        break
     K += 1
+    j = i
     while True:
-        j = i
-        data_tosend += bytes_Data[j]
+        data_tosend += bytes_Data[j].to_bytes(1,byteorder='big')
         j += 1
-        if j >=24 or bytes_Data[j] == None:
+        if j-i >=24  or j >= DataLength:
             break
+    #print("数据:",data_tosend)
     send_Data('\x10', data_tosend ,"192.168.30.102","192.168.30.110",K)
-    if receive_Data(ReceiveFile_path) == (0x20 , K+1):
-        data_tosend = None
-        i=j+1
+    #if receive_Data(ReceiveFile_path) == (0x20 , K+1):
+    data_tosend = "".encode('gbk')
+    i=j+1
+    if i >= DataLength:
+        break
     
-    
-
-
-
-

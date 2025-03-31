@@ -1,13 +1,15 @@
 import Framing_Function
 
-#接收二进制数据包,寻找起始符截至符
-def receive_Data(File):
-    print("接收:",File)
+#接受二进制数
+def receive_binData():
+    data = 0b1111100100110011
+    bytes_data = data.to_bytes(data.bit_length()//8, byteorder='big')
+    print("字节数据:", bytes_data)
+    return data
 
 #将二进制数转换为bytes类型
-def binary_To_bytes(data):
-    return bytes(data)
-
+def int_to_bytes(n):
+    print("")
 
 #对CRC校验位前的数据进行CRC校验
 def CRC_Check(bytes_Data):
@@ -45,3 +47,6 @@ def Unpacking_Function1(bytes_Data):
     else:
         print("CRC校验失败")
         return False
+
+
+receive_binData()
