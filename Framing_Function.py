@@ -24,7 +24,7 @@ def Framing_Function1(bytes_Data,destinationaddress,sourceaddress,times):
     bytes_sourceaddress = socket.inet_aton(sourceaddress)
 
     DataLength = len(bytes_Data)
-    bytes_DataLength = DataLength.to_bytes(2,byteorder='big')
+    bytes_DataLength = DataLength.to_bytes(1,byteorder='big')
     #bytes_times = times.to_bytes(1,byteorder='big')
     bytes_senddata=(0x10+times).to_bytes(1,byteorder='big')
     bytes_after1_Data = BEGIN_FLAG + bytes_destinationaddress + bytes_sourceaddress + bytes_DataLength + bytes_Data + bytes_senddata
