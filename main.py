@@ -1,5 +1,6 @@
 import Framing_Function
 import Unpacking_Function
+import BinToInt
 
 ReceiveFile_path = ""
 state = ""
@@ -28,26 +29,34 @@ def send_Data(control,Data,destinationaddress,sourceaddress,times):
 #print("解包得:",Unpacking_Function.Unpacking_Function1(Framing_Function.ACK_send("192.168.30.102","192.168.30.110",6)))
 #print("解包得:",Unpacking_Function.Unpacking_Function1(Framing_Function.REJ_send("192.168.30.102","192.168.30.110",4))
 
-#在指定文件里接收二进制数据包
-def receive_Data(File):
-    i = 0
-    while True:
-        i += 1
-        File.seek(i)
-        if File.read(1) == b'\x7e':
-            File.seek(i)
-            while True:
-                bytes_rec_data += File.read(1)
-                if not File.read(1) :
-                    return False
-                if len(bytes_rec_data) >= 31 :
-                    print("数据包过长或丢帧")
-                    return False
-                if bytes_rec_data[-1:] == b'\x7e' and bytes_rec_data[-2:-1] != b'\x7d':#转义字符
-                    return bytes_rec_data
-        if i >= 100 :
-            return "noData"
+#截取数据包
+def receive_Data():
+    bytes_recdata = b''
+    bytes_data = Unpacking_Function.receive_binData()
 
+    if bytes_data != False:
+        for index,bytes in enumerate(bytes_data) :
+            #寻找起始符
+            if bytes == 126:#Framing_Function.BEGIN_FLAG:
+
+                bytes_recdata += bytes.to_bytes(1,byteorder='big')
+
+                if index+1 < len(bytes_data):
+                    bytes_data2 = bytes_data[index+1:]
+                else:
+                    return "DataError"
+                #开始截取数据包
+                for index2,bytes2 in enumerate(bytes_data2):
+                    #寻找结束符
+                    if  bytes_data2[index2] == 126:#Framing_Function.END_FLAG:
+                        bytes_recdata += bytes2.to_bytes(1,byteorder='big')
+                        return bytes_recdata
+                    else:
+                        bytes_recdata += bytes2.to_bytes(1,byteorder='big')
+                    #未找到截至符则返回错误
+                    if index2 >=30:
+                        return "DataError"
+                
 #接受数据包
 def receive_Data_keyboard(bytes_rec_data):
     while True:
@@ -62,7 +71,7 @@ def receive_Data_keyboard(bytes_rec_data):
         else :
             return False
 
-#将接收到的数据包解包
+#将接收到的数据包解包(没用)
 def UnpackingRecData(File):
     if receive_Data(File) != False:
         bytes_rec_data = receive_Data(File)
@@ -77,7 +86,7 @@ def UnpackingRecData(File):
     else :
         return False
 
-#定义状态机
+#定义状态机(没什么用
 def StateMachine():
     while state != "end" :
         if state == "leisure":
@@ -113,11 +122,13 @@ while True:
             break
     #print("数据:",data_tosend)
     send_Data('\x10', data_tosend ,"192.168.30.102","192.168.30.110",K)
-    print("接受:",receive_Data_keyboard(Unpacking_Function.receive_binData()))
+    #print("接受:",receive_Data_keyboard(Unpacking_Function.receive_binData()))
     #if receive_Data(ReceiveFile_path) == (0x20 , K+1):
     data_tosend = "".encode('gbk')
     i=j+1
     if i >= DataLength:
         break
     
-#print(receive_Data_keyboard(Unpacking_Function.receive_binData()))
+
+#receive_Data_keyboard(receive_Data())
+print(receive_Data_keyboard(receive_Data()))
