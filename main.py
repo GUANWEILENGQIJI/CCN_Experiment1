@@ -105,8 +105,8 @@ def StateMachine():
 #print(receive_Data_keyboard(receive_Data()))
 
 
-#Data = input("请输入数据: ")
-Data = "w操你妈了个逼d"
+Data = input("请输入数据: ")
+#Data = "w操你妈了个逼d操你妈了个逼的我操"
 bytes_Data = Data.encode('gbk')
 DataLength = len(bytes_Data)
 print("数据长度:",DataLength)
@@ -114,32 +114,24 @@ print("数据长度:",DataLength)
 def add_data(bytes_Data,K):
     i = 0
     data_tosend = "".encode('gbk')
+    datalen = len(bytes_Data)
     while True:
-        #发送逻辑    
-        if 0x81 <= bytes_Data[i] <= 0xFE:
-            data_tosend += bytes_Data[i].to_bytes(1,byteorder='big')
-            data_tosend += bytes_Data[i+1].to_bytes(1,byteorder='big')
-            i += 2
-        else:
-            data_tosend += bytes_Data[i].to_bytes(1,byteorder='big')
-            i += 1
-
-        if i >= 15 & i+2 >= len(bytes_Data):
-            print("数据长度:",len(data_tosend))
-            send_Data(data_tosend[0],"192.168.30.211","192.168.20.102",K)
-            add_data(bytes_Data[i:],K+1)
-
-add_data(bytes_Data,1)
+        if i <= 15 and i < datalen:  
+            if 0x81 <= bytes_Data[i] <= 0xFE:
+                data_tosend += bytes_Data[i].to_bytes(1,byteorder='big')
+                data_tosend += bytes_Data[i+1].to_bytes(1,byteorder='big')
+                i += 2
+            else:
+                data_tosend += bytes_Data[i].to_bytes(1,byteorder='big')
+                i += 1
+            if i >= datalen or i>= 15:
+                break
+    send_Data('\x10',data_tosend,"192.168.30.211","192.168.20.102",K)
+    #print(K)
+    if i < datalen:
+        add_data(bytes_Data[i:],K+1)
     
-
-
-
-
-
-
-
-
-
+add_data(bytes_Data,1)
 #receive_Data_keyboard(receive_Data())
 #接受二进制数
-#print(receive_Data_keyboard(receive_Data()))
+print(receive_Data_keyboard(receive_Data()))
