@@ -3,6 +3,7 @@ import BinToInt
 #接受二进制数
 def receive_binData():
     data = BinToInt.bin_to_int(input("请输入二进制数:"))
+    
     bytes_data = data.to_bytes((data.bit_length()+7)//8, byteorder='big')
     #print("接受:", bytes_data)
     return bytes_data

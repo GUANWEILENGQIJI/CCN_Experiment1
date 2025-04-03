@@ -102,33 +102,44 @@ def StateMachine():
             #接收数据
             print('接收')
 
+#print(receive_Data_keyboard(receive_Data()))
+
+
 #Data = input("请输入数据: ")
-Data = input("请输入数据: ")
+Data = "w操你妈了个逼d"
 bytes_Data = Data.encode('gbk')
 DataLength = len(bytes_Data)
 print("数据长度:",DataLength)
-i = 0
-K = 0
-data_tosend = "".encode('gbk')
 
-while True:
-    #发送逻辑
-    K += 1
-    j = i
-    while True:
-        data_tosend += bytes_Data[j].to_bytes(1,byteorder='big')
-        j += 1
-        if j-i >=24  or j >= DataLength:
-            break
-    #print("数据:",data_tosend)
-    send_Data('\x10', data_tosend ,"192.168.30.102","192.168.30.110",K)
-    #print("接受:",receive_Data_keyboard(Unpacking_Function.receive_binData()))
-    #if receive_Data(ReceiveFile_path) == (0x20 , K+1):
+def add_data(bytes_Data,K):
+    i = 0
     data_tosend = "".encode('gbk')
-    i=j+1
-    if i >= DataLength:
-        break
+    while True:
+        #发送逻辑    
+        if 0x81 <= bytes_Data[i] <= 0xFE:
+            data_tosend += bytes_Data[i].to_bytes(1,byteorder='big')
+            data_tosend += bytes_Data[i+1].to_bytes(1,byteorder='big')
+            i += 2
+        else:
+            data_tosend += bytes_Data[i].to_bytes(1,byteorder='big')
+            i += 1
+
+        if i >= 15 & i+2 >= len(bytes_Data):
+            print("数据长度:",len(data_tosend))
+            send_Data(data_tosend[0],"192.168.30.211","192.168.20.102",K)
+            add_data(bytes_Data[i:],K+1)
+
+add_data(bytes_Data,1)
     
 
+
+
+
+
+
+
+
+
 #receive_Data_keyboard(receive_Data())
-print(receive_Data_keyboard(receive_Data()))
+#接受二进制数
+#print(receive_Data_keyboard(receive_Data()))
